@@ -1,0 +1,60 @@
+function renderProductManager(){
+  $("productCards").innerHTML = products.length
+    ? products.map(p => {
+        const low = Number(p.quantity || 0) <= Number(p.min_quantity || 0);
+        const c = catForProduct(p);
+        const im = p.image_url
+          ? `<img src="${esc(p.image_url)}" alt="">`
+          : c?.icon || "🛍️";
+
+        return `
+          <div class="productRow">
+            <div class="productInfo">
+              <div class="thumb">${im}</div>
+
+              <div>
+                <h3>${esc(p.name)}</h3>
+
+                <small>
+                  ${esc(c?.name || "Other")}
+                  · خرید: ${fmt(p.purchase_price)}
+                  · فروش: ${fmt(p.unit_price)}
+                </small>
+
+                <br>
+
+                <small class="${low ? "stockLow" : ""}">
+                  موجودی: ${num(p.quantity)}
+                  · حداقل: ${num(p.min_quantity)}
+                </small>
+              </div>
+            </div>
+
+            <div class="actions productManagerActions">
+              <button
+                class="ghost editProduct"
+                data-id="${esc(p.id)}"
+                type="button">
+                Edit
+              </button>
+
+              <button
+                class="danger deleteProduct"
+                data-id="${esc(p.id)}"
+                type="button">
+                Delete
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("")
+    : `<div class="empty">هنوز محصولی ثبت نشده است.</div>`;
+
+  document.querySelectorAll(".editProduct").forEach(b => {
+    b.onclick = () => openProduct(b.dataset.id);
+  });
+
+  document.querySelectorAll(".deleteProduct").forEach(b => {
+    b.onclick = () => deleteProduct(b.dataset.id);
+  });
+}
